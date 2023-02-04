@@ -1,0 +1,58 @@
+{
+  "collapse-filter": true,
+  "search": "",
+  "showTags": true,
+  "showAttachments": false,
+  "hideUnresolved": false,
+  "showOrphans": true,
+  "collapse-color-groups": false,
+  "colorGroups": [
+    {
+      "query": "path:计算机原理",
+      "color": {
+        "a": 1,
+        "rgb": 14048348
+      }
+    },
+    {
+      "query": "path:机器学习&深度学习",
+      "color": {
+        "a": 1,
+        "rgb": 16117565
+      }
+    },
+    {
+      "query": "path:数学",
+      "color": {
+        "a": 1,
+        "rgb": 6068182
+      }
+    },
+    {
+      "query": "path:程序设计",
+      "color": {
+        "a": 1,
+        "rgb": 6084188
+      }
+    },
+    {
+      "query": "path:计算机应用",
+      "color": {
+        "a": 1,
+        "rgb": 13524182
+      }
+    }
+  ],
+  "collapse-display": false,
+  "showArrow": true,
+  "textFadeMultiplier": 0,
+  "nodeSizeMultiplier": 0.958762886597938,
+  "lineSizeMultiplier": 2.29742268041237,
+  "collapse-forces": true,
+  "centerStrength": 0.518713248970312,
+  "repelStrength": 10,
+  "linkStrength": 1,
+  "linkDistance": 250,
+  "scale": 0.7132754626224463,
+  "close": true
+}

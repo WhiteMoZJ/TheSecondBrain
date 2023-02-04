@@ -1,0 +1,28 @@
+{
+  "server_url": "http://localhost:5000",
+  "debug": "off",
+  "commands": {
+    "hello_world": {
+      "active": true,
+      "label": "Hello world",
+      "type": "insert-text"
+    },
+    "to_upper_case": {
+      "active": false,
+      "label": "Convert to upper case",
+      "type": "replace-text"
+    },
+    "chat": {
+      "active": false,
+      "label": "Simple chat service",
+      "type": "command-line"
+    },
+    "random_similarity": {
+      "active": true,
+      "label": "Random score similarity",
+      "type": "panel",
+      "icon": "gear",
+      "invokeOnOpen": true
+    }
+  }
+}

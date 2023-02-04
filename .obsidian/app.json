@@ -1,0 +1,23 @@
+{
+  "spellcheck": true,
+  "attachmentFolderPath": "./images",
+  "showUnsupportedFiles": false,
+  "trashOption": "none",
+  "promptDelete": true,
+  "strictLineBreaks": false,
+  "rightToLeft": false,
+  "showFrontmatter": false,
+  "readableLineLength": true,
+  "livePreview": true,
+  "spellcheckLanguages": [
+    "en"
+  ],
+  "pdfExportSettings": {
+    "includeName": true,
+    "pageSize": "A4",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  },
+  "alwaysUpdateLinks": true
+}

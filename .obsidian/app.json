@@ -3,7 +3,7 @@
   "attachmentFolderPath": "./images",
   "showUnsupportedFiles": false,
   "trashOption": "none",
-  "promptDelete": true,
+  "promptDelete": false,
   "strictLineBreaks": false,
   "rightToLeft": false,
   "showFrontmatter": false,
@@ -19,5 +19,6 @@
     "margin": "0",
     "downscalePercent": 100
   },
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "showLineNumber": false
 }

@@ -4,5 +4,7 @@
   "theme": "moonstone",
   "translucency": false,
   "nativeMenus": true,
-  "baseFontSize": 16
+  "baseFontSize": 16,
+  "monospaceFontFamily": "Consolas",
+  "textFontFamily": ""
 }

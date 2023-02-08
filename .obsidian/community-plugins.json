@@ -3,7 +3,6 @@
   "cm-editor-syntax-highlight-obsidian",
   "obsidian-jupyter",
   "table-editor-obsidian",
-  "obsidian-zoom",
   "obsidian-kanban",
   "obsidian-mind-map",
   "obsidian-admonition",
@@ -16,5 +15,7 @@
   "obsidian-local-images",
   "oz-image-plugin",
   "obsidian-matrix",
-  "obsidian-latex-environments"
+  "obsidian-latex-environments",
+  "obsidian-code-block-enhancer",
+  "obsidian-timestamper"
 ]

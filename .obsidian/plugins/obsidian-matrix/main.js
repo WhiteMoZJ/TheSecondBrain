@@ -51,7 +51,7 @@ var __async = (__this, __arguments, generator) => {
 __export(exports, {
   default: () => MyPlugin
 });
-var import_obsidian3 = __toModule(require("obsidian"));
+var import_obsidian4 = __toModule(require("obsidian"));
 
 // CreationModal.ts
 var import_obsidian2 = __toModule(require("obsidian"));
@@ -73,11 +73,12 @@ var ErrorModal = class extends import_obsidian.Modal {
 
 // CreationModal.ts
 var _CreationModal = class extends import_obsidian2.Modal {
-  constructor(app) {
+  constructor(app, plugin) {
     super(app);
     this.matrixWidth = 2;
     this.matrixHeight = 2;
     this.selectedMatrix = "Plain (matrix)";
+    this.parentPlugin = plugin;
   }
   onOpen() {
     this.createHTML();
@@ -88,9 +89,18 @@ var _CreationModal = class extends import_obsidian2.Modal {
       dc.onChange((value) => {
         this.selectedMatrix = value;
       });
+      if (this.parentPlugin.settings.rememberMatrixType && this.parentPlugin.settings.lastUsedMatrix) {
+        dc.setValue(this.parentPlugin.settings.lastUsedMatrix);
+        this.selectedMatrix = this.parentPlugin.settings.lastUsedMatrix;
+      }
     });
     new import_obsidian2.Setting(this.settingsDiv).setName("Matrix width").addSlider((slider) => {
-      slider.setValue(2);
+      if (this.parentPlugin.settings.rememberMatrixDimensions) {
+        slider.setValue(this.parentPlugin.settings.prevX == null ? 2 : this.parentPlugin.settings.prevX);
+        this.matrixWidth = this.parentPlugin.settings.prevX == null ? 2 : this.parentPlugin.settings.prevX;
+      } else {
+        slider.setValue(2);
+      }
       slider.setLimits(1, 10, 1);
       slider.showTooltip();
       slider.setDynamicTooltip();
@@ -100,7 +110,12 @@ var _CreationModal = class extends import_obsidian2.Modal {
       });
     });
     new import_obsidian2.Setting(this.settingsDiv).setName("Matrix height").addSlider((slider) => {
-      slider.setValue(2);
+      if (this.parentPlugin.settings.rememberMatrixDimensions) {
+        slider.setValue(this.parentPlugin.settings.prevY == null ? 2 : this.parentPlugin.settings.prevY);
+        this.matrixHeight = this.parentPlugin.settings.prevY == null ? 2 : this.parentPlugin.settings.prevY;
+      } else {
+        slider.setValue(2);
+      }
       slider.setLimits(1, 10, 1);
       slider.showTooltip();
       slider.setDynamicTooltip();
@@ -113,6 +128,15 @@ var _CreationModal = class extends import_obsidian2.Modal {
       button.setIcon("checkmark");
       button.setCta();
       button.onClick(() => {
+        if (this.parentPlugin.settings.rememberMatrixType) {
+          this.parentPlugin.settings.lastUsedMatrix = this.selectedMatrix;
+          this.parentPlugin.saveSettings();
+        }
+        if (this.parentPlugin.settings.rememberMatrixDimensions) {
+          this.parentPlugin.settings.prevX = this.matrixWidth;
+          this.parentPlugin.settings.prevY = this.matrixHeight;
+          this.parentPlugin.saveSettings();
+        }
         const chunks = Array.from(this.matrixDiv.children).map((child) => {
           return child.value;
         }).reduce((resultArray, item, index) => {
@@ -125,10 +149,14 @@ var _CreationModal = class extends import_obsidian2.Modal {
         }, []);
         const latexString = chunks.map((chunk) => {
           return chunk.join(" & ");
-        }).join(" \\\\\n");
-        this.writeAtCursor(`\\begin{${_CreationModal.matrixTypes[this.selectedMatrix]}}
+        }).join(this.parentPlugin.settings.inline ? " \\\\" : " \\\\\n");
+        if (this.parentPlugin.settings.inline) {
+          this.writeAtCursor(`\\begin{${_CreationModal.matrixTypes[this.selectedMatrix]}}${latexString}\\end{${_CreationModal.matrixTypes[this.selectedMatrix]}}`);
+        } else {
+          this.writeAtCursor(`\\begin{${_CreationModal.matrixTypes[this.selectedMatrix]}}
 ${latexString}
 \\end{${_CreationModal.matrixTypes[this.selectedMatrix]}}`);
+        }
         this.close();
       });
     });
@@ -177,13 +205,66 @@ CreationModal.matrixTypes = {
   "Double Pipes (Vmatrix)": "Vmatrix"
 };
 
+// settings.ts
+var import_obsidian3 = __toModule(require("obsidian"));
+var MatrixSettingTab = class extends import_obsidian3.PluginSettingTab {
+  constructor(app, plugin) {
+    super(app, plugin);
+    this.plugin = plugin;
+  }
+  display() {
+    let { containerEl } = this;
+    containerEl.empty();
+    new import_obsidian3.Setting(containerEl).setName("Remember previous matrix type").setDesc('After choosing a matrix type and clicking "Create", the type will be selected by default the next time you open the matrix creation window.').addToggle((toggle) => toggle.setValue(this.plugin.settings.rememberMatrixType).onChange((value) => __async(this, null, function* () {
+      this.plugin.settings.rememberMatrixType = value;
+      yield this.plugin.saveSettings();
+    })));
+    new import_obsidian3.Setting(containerEl).setName("Remember previous matrix dimensions").setDesc('After entering a matrix and clicking "Create", the dimensions will be selected by default the next time you open the matrix creation window.').addToggle((toggle) => toggle.setValue(this.plugin.settings.rememberMatrixDimensions).onChange((value) => __async(this, null, function* () {
+      this.plugin.settings.rememberMatrixDimensions = value;
+      yield this.plugin.saveSettings();
+    })));
+    new import_obsidian3.Setting(containerEl).setName("Put matrix command on one line").setDesc("Rather than inserting a newline after each row of the matrix, all text will be placed on one line. This will allow the matrix to immediately work between inline (single) $-signs, as well as multiline $$-signs.").addToggle((toggle) => toggle.setValue(this.plugin.settings.inline).onChange((value) => __async(this, null, function* () {
+      this.plugin.settings.inline = value;
+      yield this.plugin.saveSettings();
+    })));
+  }
+};
+
 // main.ts
-var MyPlugin = class extends import_obsidian3.Plugin {
+var DEFAULT_SETTINGS = {
+  rememberMatrixType: true,
+  rememberMatrixDimensions: true,
+  inline: false,
+  lastUsedMatrix: "",
+  prevX: null,
+  prevY: null
+};
+var MyPlugin = class extends import_obsidian4.Plugin {
   onload() {
     return __async(this, null, function* () {
       this.addRibbonIcon("pane-layout", "Obsidian Matrix", () => {
-        new CreationModal(this.app).open();
+        new CreationModal(this.app, this).open();
       });
+      this.addCommand({
+        id: "obsidian-matrix-shortcut",
+        name: "Open Obsidian Matrix menu",
+        hotkeys: [],
+        callback: () => {
+          new CreationModal(this.app, this).open();
+        }
+      });
+      yield this.loadSettings();
+      this.addSettingTab(new MatrixSettingTab(this.app, this));
+    });
+  }
+  loadSettings() {
+    return __async(this, null, function* () {
+      this.settings = Object.assign({}, DEFAULT_SETTINGS, yield this.loadData());
+    });
+  }
+  saveSettings() {
+    return __async(this, null, function* () {
+      yield this.saveData(this.settings);
     });
   }
 };

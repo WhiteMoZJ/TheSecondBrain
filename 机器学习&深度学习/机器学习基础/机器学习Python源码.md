@@ -111,8 +111,8 @@ def gradient_function(x, y, w, b):
 ```python
 def gradient_descent(x, y, w_in, b_in, alpha, num_iters): 
     """
-    Performs gradient descent to fit w,b. Updates w,b by taking 
-    num_iters gradient steps with learning rate alpha
+    执行梯度下降以拟合 w，b
+    通过采用具有学习率 alpha 的梯度步长梯度下降num_iters次来更新 w，b
     
     Args:
 	    x (ndarray (m,)): 数据，m个样本
